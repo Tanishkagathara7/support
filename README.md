@@ -1,318 +1,154 @@
-# Support Ticket Management System API
+# 🎫 Support Ticket Management System API
 
-**Version:** 1.0.0  
-**Architecture:** REST API  
-**Database:** MongoDB
+**Version:** 1.0.0 &nbsp;|&nbsp; **Architecture:** REST API &nbsp;|&nbsp; **Database:** MongoDB
 
-A production-grade backend API for managing support tickets with Role-Based Access Control (RBAC).
+A production-grade backend API for managing support tickets with Role-Based Access Control (RBAC), built with Node.js, Express, and MongoDB.
 
-## Features
+---
 
-- 🔐 JWT Authentication
-- 👥 Role-Based Access Control (MANAGER, SUPPORT, USER)
-- 🎫 Complete Ticket Management
-- 💬 Ticket Comments System
-- 📊 Status Transition Tracking
-- 📝 Input Validation
-- 📚 Swagger API Documentation
-- 🏗️ Clean MVC Architecture
+## ✨ Features
 
-## Tech Stack
+- 🔐 **JWT Authentication** — Secure token-based auth
+- 👥 **Role-Based Access Control** — MANAGER, SUPPORT, USER roles
+- 🎫 **Full Ticket Lifecycle** — Create, assign, update status, delete
+- 💬 **Comments System** — Threaded comments per ticket
+- 📊 **Status Transition Audit Log** — Every status change is recorded
+- ✅ **Input Validation** — All endpoints validated via express-validator
+- 📚 **Swagger UI Docs** — Interactive API docs at `/docs`
+- 🏗️ **Clean MVC Architecture** — Separation of concerns
 
-- **Runtime:** Node.js
-- **Framework:** Express.js
-- **Database:** MongoDB
-- **ODM:** Mongoose
-- **Authentication:** JWT (jsonwebtoken)
-- **Password Hashing:** bcrypt
-- **Validation:** express-validator
-- **Documentation:** Swagger UI
+---
 
-## Project Structure
+## 🛠️ Tech Stack
+
+| Layer | Technology |
+|---|---|
+| Runtime | Node.js |
+| Framework | Express.js |
+| Database | MongoDB (Atlas or Local) |
+| ODM | Mongoose |
+| Auth | JWT (jsonwebtoken) |
+| Password Hashing | bcrypt |
+| Validation | express-validator |
+| API Docs | swagger-ui-express + swagger-jsdoc |
+| Dev Server | nodemon |
+
+---
+
+## 📁 Project Structure
 
 ```
 .
-├── config/           # Database and app configuration
-├── controllers/      # Request handlers
-├── middlewares/     # Auth, role, validation, error handlers
-├── models/          # Mongoose models
-├── routes/          # API routes
-├── services/        # Business logic
-├── utils/           # Utility functions
-├── scripts/         # Database initialization scripts
-├── server.js        # Application entry point
-└── package.json     # Dependencies
+├── config/
+│   └── database.js          # MongoDB connection
+├── controllers/
+│   ├── authController.js    # Login logic
+│   ├── userController.js    # User CRUD
+│   ├── ticketController.js  # Ticket CRUD
+│   └── commentController.js # Comment CRUD
+├── middlewares/
+│   ├── authMiddleware.js    # JWT verification
+│   ├── roleMiddleware.js    # Role-based access
+│   ├── validationMiddleware.js # Input validation handler
+│   └── errorHandler.js     # Global error handler
+├── models/
+│   ├── Role.js
+│   ├── User.js
+│   ├── Ticket.js
+│   ├── TicketComment.js
+│   ├── TicketStatusLog.js
+│   └── index.js
+├── routes/
+│   ├── authRoutes.js
+│   ├── userRoutes.js
+│   ├── ticketRoutes.js
+│   └── commentRoutes.js
+├── services/
+│   ├── ticketService.js     # Ticket business logic
+│   └── commentService.js   # Comment business logic
+├── utils/
+│   └── statusTransition.js # Valid status transition rules
+├── scripts/
+│   └── initDatabase.js     # DB seed script
+├── server.js               # App entry point
+├── package.json
+└── .env                    # Environment variables
 ```
 
-## Prerequisites
+---
 
-- Node.js (v14 or higher)
-- MongoDB (v4.4 or higher)
-- npm or yarn
+## ⚙️ Prerequisites
 
-## Installation
+- **Node.js** v14 or higher
+- **MongoDB** — Local (v4.4+) or [MongoDB Atlas](https://www.mongodb.com/atlas)
+- **npm**
 
-### 1. Clone and Install Dependencies
+---
+
+## 🚀 Getting Started
+
+### 1. Install Dependencies
 
 ```bash
 npm install
 ```
 
-### 2. Environment Configuration
+### 2. Configure Environment
 
 Create a `.env` file in the root directory:
 
 ```env
-# Server Configuration
+# Server
 PORT=3000
 NODE_ENV=development
 
-# MongoDB Configuration
-# Option 1: Full connection string (recommended)
-MONGODB_URI=mongodb://localhost:27017/support_tickets
+# MongoDB — use Atlas URI or local
+MONGODB_URI=mongodb+srv://<username>:<password>@cluster.mongodb.net/support_tickets?retryWrites=true&w=majority
 
-# Option 2: Individual components (if MONGODB_URI not provided)
+# Local MongoDB alternative (used if MONGODB_URI is not set)
 DB_HOST=localhost
 DB_PORT=27017
 DB_NAME=support_tickets
 
-# JWT Configuration
+# JWT
 JWT_SECRET=your-super-secret-jwt-key-change-in-production
 JWT_EXPIRES_IN=1d
 ```
 
-### 3. Database Setup
+### 3. Seed the Database
 
-#### Option A: Automatic Setup (Recommended for Development)
+Run the initialization script to create roles and a default MANAGER account:
 
 ```bash
 node scripts/initDatabase.js
 ```
 
-This script will:
-- Connect to MongoDB
-- Create default roles (MANAGER, SUPPORT, USER)
-- Create a default manager account:
-  - Email: `manager@example.com`
-  - Password: `Manager123!`
-
+This creates:
+- Roles: `MANAGER`, `SUPPORT`, `USER`
+- Default Manager:
+  - **Email:** `manager@example.com`
+  - **Password:** `Manager123!`
 
 ### 4. Start the Server
 
-**Development mode (with auto-reload):**
 ```bash
+# Development (auto-reload)
 npm run dev
 
-
-The server will start on `http://localhost:3000` (or your configured PORT).
-
-## API Documentation
-
-Once the server is running, access Swagger UI at:
-```
-http://localhost:3000/docs
+# Production
+npm start
 ```
 
-## API Endpoints
+Server runs at: `http://localhost:3000`  
+Swagger Docs at: `http://localhost:3000/docs`
 
-### Authentication
+---
 
-#### POST /auth/login
-Public route for user login.
+## 🔑 Authentication
 
-**Request:**
-```json
-{
-  "email": "manager@example.com",
-  "password": "Manager123!"
-}
+All protected endpoints require a `Bearer` token in the `Authorization` header.
 
-**Response:**
-```{
-  "success": true,
-  "data": {
-    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
-    "user": {
-      "id": "...",
-      "name": "Default Manager",
-      "role": "MANAGER"
-    }
-  }
-}
-```
-
-### Users (MANAGER Only)
-
-#### POST /users
-Create a new user (USER or SUPPORT role only).
-
-**Headers:**
-```
-Authorization: Bearer <token>
-```
-
-**Request:**
-```json
-{
-  "name": "Jane Doe",
-  "email": "jane@example.com",
-  "password": "password123",
-  "role": "SUPPORT"
-}
-```
-
-#### GET /users
-Get all users.
-
-**Headers:**
-```
-Authorization: Bearer <token>
-```
-
-### Tickets
-
-#### POST /tickets
-Create a new ticket (USER, MANAGER).
-
-**Headers:**
-```
-Authorization: Bearer <token>
-```
-
-**Request:**
-```json
-{
-  "title": "Login issue",
-  "description": "Cannot login to the system",
-  "priority": "HIGH"
-}
-```
-
-**Validation:**
-- Title: minimum 5 characters
-- Description: minimum 10 characters
-- Priority: LOW, MEDIUM, HIGH (default: MEDIUM)
-
-#### GET /tickets
-Get tickets based on role:
-- **MANAGER:** All tickets
-- **SUPPORT:** Assigned tickets only
-- **USER:** Own tickets only
-
-#### GET /tickets/:id
-Get ticket by ID (with access control).
-
-#### PATCH /tickets/:id/assign
-Assign ticket to a user (MANAGER, SUPPORT).
-
-**Request:**
-```json
-{
-  "assigned_to": 2
-}
-```
-
-**Rules:**
-- Cannot assign to USER role
-- Only SUPPORT or MANAGER can be assigned
-
-#### PATCH /tickets/:id/status
-Update ticket status (MANAGER, SUPPORT).
-
-**Request:**
-```json
-{
-  "status": "IN_PROGRESS"
-}
-```
-
-**Valid Status Transitions:**
-- OPEN → IN_PROGRESS
-- IN_PROGRESS → RESOLVED
-- RESOLVED → CLOSED
-
-Invalid transitions return 400 error.
-
-#### DELETE /tickets/:id
-Delete ticket (MANAGER only).
-
-### Comments
-
-#### POST /tickets/:id/comments
-Create a comment on a ticket.
-
-**Access:**
-- MANAGER: All tickets
-- SUPPORT: Assigned tickets only
-- USER: Own tickets only
-
-**Request:**
-```json
-{
-  "comment": "Looking into this issue"
-}
-```
-
-#### GET /tickets/:id/comments
-Get all comments for a ticket (same access rules as above).
-
-#### PATCH /comments/:id
-Update a comment.
-
-**Access:**
-- MANAGER: All comments
-- Comment author: Own comments only
-
-#### DELETE /comments/:id
-Delete a comment.
-
-**Access:**
-- MANAGER: All comments
-- Comment author: Own comments only
-
-## Role-Based Access Control
-
-### Roles
-
-1. **MANAGER**
-   - Full access to all tickets
-   - Can create users (USER, SUPPORT)
-   - Can assign tickets
-   - Can update ticket status
-   - Can delete tickets
-   - Can manage all comments
-
-2. **SUPPORT**
-   - View assigned tickets only
-   - Can assign tickets
-   - Can update ticket status
-   - Can comment on assigned tickets
-   - Can manage own comments
-
-3. **USER**
-   - View own tickets only
-   - Can create tickets
-   - Can comment on own tickets
-   - Can manage own comments
-
-## Status Flow
-
-Tickets follow a strict status flow:
-
-```
-OPEN → IN_PROGRESS → RESOLVED → CLOSED
-```
-
-**Invalid transitions:**
-- OPEN → RESOLVED ❌
-- IN_PROGRESS → CLOSED ❌
-- Any backward transition ❌
-
-All status changes are logged in `ticket_status_logs` table.
-
-## Testing the API
-
-### 1. Login as Manager
+**Login to get a token:**
 
 ```bash
 curl -X POST http://localhost:3000/auth/login \
@@ -323,162 +159,309 @@ curl -X POST http://localhost:3000/auth/login \
   }'
 ```
 
-Save the token from the response.
+**Response:**
 
-### 2. Create a User
+```json
+{
+  "success": true,
+  "data": {
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+    "user": {
+      "id": "699d1be58794cc3be2079a0b",
+      "name": "Default Manager",
+      "role": "MANAGER"
+    }
+  }
+}
+```
 
+Use the token in all subsequent requests:
+```
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+```
+
+---
+
+## 📡 API Endpoints
+
+### 🔓 Auth
+
+| Method | Endpoint | Access | Description |
+|--------|----------|--------|-------------|
+| POST | `/auth/login` | Public | Login and get JWT token |
+
+---
+
+### 👤 Users
+
+| Method | Endpoint | Access | Description |
+|--------|----------|--------|-------------|
+| POST | `/users` | MANAGER | Create a new user (USER or SUPPORT) |
+| GET | `/users` | MANAGER | List all users |
+
+**Create User Request:**
+```json
+{
+  "name": "Jane Doe",
+  "email": "jane@example.com",
+  "password": "password123",
+  "role": "SUPPORT"
+}
+```
+
+---
+
+### 🎫 Tickets
+
+| Method | Endpoint | Access | Description |
+|--------|----------|--------|-------------|
+| POST | `/tickets` | USER, MANAGER | Create a new ticket |
+| GET | `/tickets` | All (filtered by role) | Get tickets |
+| GET | `/tickets/:id` | All (with access control) | Get ticket by ID |
+| PATCH | `/tickets/:id/assign` | MANAGER, SUPPORT | Assign ticket to a user |
+| PATCH | `/tickets/:id/status` | MANAGER, SUPPORT | Update ticket status |
+| DELETE | `/tickets/:id` | MANAGER | Delete a ticket |
+
+**Create Ticket Request:**
+```json
+{
+  "title": "System not responding",
+  "description": "The system is not responding to my requests",
+  "priority": "HIGH"
+}
+```
+
+**Assign Ticket Request:**
+```json
+{
+  "assigned_to": "65a3f4b2c9e77a001f3d8abc"
+}
+```
+> `assigned_to` must be a valid MongoDB ObjectId of a SUPPORT or MANAGER user.
+
+---
+
+### 💬 Comments
+
+| Method | Endpoint | Access | Description |
+|--------|----------|--------|-------------|
+| POST | `/tickets/:id/comments` | All (access-controlled) | Add comment to ticket |
+| GET | `/tickets/:id/comments` | All (access-controlled) | Get comments for ticket |
+| PATCH | `/comments/:id` | MANAGER, comment author | Edit a comment |
+| DELETE | `/comments/:id` | MANAGER, comment author | Delete a comment |
+
+**Create Comment Request:**
+```json
+{
+  "comment": "We are looking into this issue."
+}
+```
+
+---
+
+## 👥 Role-Based Access Control
+
+| Permission | MANAGER | SUPPORT | USER |
+|---|:---:|:---:|:---:|
+| Login | ✅ | ✅ | ✅ |
+| Create users | ✅ | ❌ | ❌ |
+| View all tickets | ✅ | ❌ | ❌ |
+| View assigned tickets | ✅ | ✅ | ❌ |
+| View own tickets | ✅ | ✅ | ✅ |
+| Create tickets | ✅ | ❌ | ✅ |
+| Assign tickets | ✅ | ✅ | ❌ |
+| Update status | ✅ | ✅ | ❌ |
+| Delete tickets | ✅ | ❌ | ❌ |
+| Comment on any ticket | ✅ | ❌ | ❌ |
+| Comment on assigned ticket | ✅ | ✅ | ❌ |
+| Comment on own ticket | ✅ | ✅ | ✅ |
+| Edit/Delete any comment | ✅ | ❌ | ❌ |
+| Edit/Delete own comment | ✅ | ✅ | ✅ |
+
+---
+
+## 🔄 Ticket Status Flow
+
+Tickets follow a **strict, one-way** status progression:
+
+```
+OPEN  ──▶  IN_PROGRESS  ──▶  RESOLVED  ──▶  CLOSED
+```
+
+| Transition | Allowed |
+|---|:---:|
+| OPEN → IN_PROGRESS | ✅ |
+| IN_PROGRESS → RESOLVED | ✅ |
+| RESOLVED → CLOSED | ✅ |
+| Any backward transition | ❌ |
+| Skipping a step (e.g. OPEN → RESOLVED) | ❌ |
+
+Every status change is automatically recorded in the `TicketStatusLog` collection.
+
+---
+
+## 🧪 Full Testing Walkthrough
+
+### Step 1 — Login as Manager
+```bash
+curl -X POST http://localhost:3000/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{"email": "manager@example.com", "password": "Manager123!"}'
+```
+Save the token as `MANAGER_TOKEN`.
+
+### Step 2 — Create a Support Agent
 ```bash
 curl -X POST http://localhost:3000/users \
   -H "Content-Type: application/json" \
-  -H "Authorization: Bearer YOUR_TOKEN" \
-  -d '{
-    "name": "Test User",
-    "email": "user@example.com",
-    "password": "password123",
-    "role": "USER"
-  }'
+  -H "Authorization: Bearer $MANAGER_TOKEN" \
+  -d '{"name": "Support Agent", "email": "support@example.com", "password": "password123", "role": "SUPPORT"}'
 ```
 
-### 3. Create a Ticket (as USER)
-
-Login as the created user, then:
-
+### Step 3 — Create a User
 ```bash
+curl -X POST http://localhost:3000/users \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer $MANAGER_TOKEN" \
+  -d '{"name": "Test User", "email": "user@example.com", "password": "password123", "role": "USER"}'
+```
+
+### Step 4 — Login as User & Create a Ticket
+```bash
+# Login
+curl -X POST http://localhost:3000/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{"email": "user@example.com", "password": "password123"}'
+
+# Create ticket (use USER_TOKEN from above login)
 curl -X POST http://localhost:3000/tickets \
   -H "Content-Type: application/json" \
-  -H "Authorization: Bearer USER_TOKEN" \
-  -d '{
-    "title": "System not responding",
-    "description": "The system is not responding to my requests",
-    "priority": "HIGH"
-  }'
+  -H "Authorization: Bearer $USER_TOKEN" \
+  -d '{"title": "System not responding", "description": "The system is not responding to my requests", "priority": "HIGH"}'
 ```
 
-### 4. Assign Ticket (as MANAGER or SUPPORT)
-
+### Step 5 — Assign Ticket (as Manager)
 ```bash
-curl -X PATCH http://localhost:3000/tickets/1/assign \
+# Replace <TICKET_ID> and <SUPPORT_USER_ID> with actual MongoDB ObjectIds
+curl -X PATCH http://localhost:3000/tickets/<TICKET_ID>/assign \
   -H "Content-Type: application/json" \
-  -H "Authorization: Bearer MANAGER_TOKEN" \
-  -d '{
-    "assigned_to": 2
-  }'
+  -H "Authorization: Bearer $MANAGER_TOKEN" \
+  -d '{"assigned_to": "<SUPPORT_USER_ID>"}'
 ```
 
-### 5. Update Status
-
+### Step 6 — Update Status (as Support)
 ```bash
-curl -X PATCH http://localhost:3000/tickets/1/status \
+curl -X PATCH http://localhost:3000/tickets/<TICKET_ID>/status \
   -H "Content-Type: application/json" \
-  -H "Authorization: Bearer MANAGER_TOKEN" \
-  -d '{
-    "status": "IN_PROGRESS"
-  }'
+  -H "Authorization: Bearer $SUPPORT_TOKEN" \
+  -d '{"status": "IN_PROGRESS"}'
 ```
 
-## Error Responses
+---
 
-All errors follow this format:
+## ❌ Error Response Format
+
+All errors follow a consistent format:
 
 ```json
 {
   "success": false,
   "message": "Error description",
-  "errors": [] // Optional: validation errors
+  "errors": [
+    { "field": "email", "message": "Valid email is required" }
+  ]
 }
 ```
 
 ### HTTP Status Codes
 
-- `200` - Success
-- `201` - Created
-- `204` - No Content (successful delete)
-- `400` - Bad Request (validation error)
-- `401` - Unauthorized (no/invalid token)
-- `403` - Forbidden (insufficient permissions)
-- `404` - Not Found
-- `500` - Internal Server Error
+| Code | Meaning |
+|------|---------|
+| `200` | Success |
+| `201` | Resource created |
+| `204` | No content (successful delete) |
+| `400` | Bad request / Validation error |
+| `401` | Unauthorized (missing or invalid token) |
+| `403` | Forbidden (insufficient role permissions) |
+| `404` | Resource not found |
+| `500` | Internal server error |
 
-## Security Features
+---
 
-- Passwords are hashed using bcrypt (10 rounds)
-- JWT tokens expire after 1 day
-- All protected routes require Bearer token
-- Role-based access control on all endpoints
-- Input validation on all requests
-- NoSQL injection protection via Mongoose ODM
+## 🗄️ Database Schema
 
-## Database Schema (MongoDB Collections)
+### `roles`
+| Field | Type | Notes |
+|-------|------|-------|
+| `_id` | ObjectId | Primary key |
+| `name` | String | ENUM: MANAGER, SUPPORT, USER — unique |
 
-### Roles Collection
-- _id (ObjectId, PK)
-- name (String, ENUM: MANAGER, SUPPORT, USER, unique)
+### `users`
+| Field | Type | Notes |
+|-------|------|-------|
+| `_id` | ObjectId | Primary key |
+| `name` | String | Required |
+| `email` | String | Required, unique |
+| `password` | String | bcrypt hash |
+| `role_id` | ObjectId | Ref: Role |
+| `created_at` | Date | Auto |
 
-### Users Collection
-- _id (ObjectId, PK)
-- name (String)
-- email (String, unique, indexed)
-- password (String, bcrypt hash)
-- role_id (ObjectId, ref: Role)
-- created_at (Date)
+### `tickets`
+| Field | Type | Notes |
+|-------|------|-------|
+| `_id` | ObjectId | Primary key |
+| `title` | String | 5–255 chars |
+| `description` | String | Min 10 chars |
+| `status` | String | ENUM: OPEN, IN_PROGRESS, RESOLVED, CLOSED |
+| `priority` | String | ENUM: LOW, MEDIUM, HIGH (default: MEDIUM) |
+| `created_by` | ObjectId | Ref: User |
+| `assigned_to` | ObjectId | Ref: User, nullable |
+| `created_at` | Date | Auto |
 
-### Tickets Collection
-- _id (ObjectId, PK)
-- title (String, min: 5, max: 255)
-- description (String, min: 10)
-- status (String, ENUM: OPEN, IN_PROGRESS, RESOLVED, CLOSED, default: OPEN)
-- priority (String, ENUM: LOW, MEDIUM, HIGH, default: MEDIUM)
-- created_by (ObjectId, ref: User)
-- assigned_to (ObjectId, ref: User, nullable)
-- created_at (Date)
+### `ticketcomments`
+| Field | Type | Notes |
+|-------|------|-------|
+| `_id` | ObjectId | Primary key |
+| `ticket_id` | ObjectId | Ref: Ticket, indexed |
+| `user_id` | ObjectId | Ref: User |
+| `comment` | String | Required |
+| `created_at` | Date | Auto |
 
-### Ticket Comments Collection
-- _id (ObjectId, PK)
-- ticket_id (ObjectId, ref: Ticket, indexed)
-- user_id (ObjectId, ref: User)
-- comment (String)
-- created_at (Date)
+### `ticketstatuslogs`
+| Field | Type | Notes |
+|-------|------|-------|
+| `_id` | ObjectId | Primary key |
+| `ticket_id` | ObjectId | Ref: Ticket, indexed |
+| `old_status` | String | Nullable (null for first entry) |
+| `new_status` | String | Required |
+| `changed_by` | ObjectId | Ref: User |
+| `changed_at` | Date | Auto |
 
-### Ticket Status Logs Collection
-- _id (ObjectId, PK)
-- ticket_id (ObjectId, ref: Ticket, indexed)
-- old_status (String, ENUM, nullable)
-- new_status (String, ENUM)
-- changed_by (ObjectId, ref: User)
-- changed_at (Date)
+---
 
-## Development
+## 🔒 Security
 
-### Running in Development Mode
+- Passwords hashed with **bcrypt** (10 salt rounds)
+- JWT tokens expire after **1 day**
+- All routes protected with **Bearer token** auth
+- **Role-based access control** on every endpoint
+- Input validated and sanitized via **express-validator**
+- NoSQL injection protection via **Mongoose ODM**
 
-```bash
-npm run dev
-```
+---
 
-Uses `nodemon` for auto-reload on file changes.
+## 🚢 Production Deployment Checklist
 
-### Database Migrations
+- [ ] Set `NODE_ENV=production`
+- [ ] Use a strong, random `JWT_SECRET` (32+ chars)
+- [ ] Use MongoDB Atlas with IP whitelist
+- [ ] Enable HTTPS (SSL/TLS)
+- [ ] Use a process manager (e.g. **PM2**)
+- [ ] Set up proper logging (e.g. **Winston**)
+- [ ] Configure CORS for your frontend domain
 
-MongoDB doesn't require migrations like SQL databases. Collections and indexes are created automatically when models are first used. For production, ensure proper indexing is in place (already configured in models).
+---
 
-## Production Deployment
-
-1. Set `NODE_ENV=production` in `.env`
-2. Use a strong `JWT_SECRET`
-3. Configure proper database credentials
-4. Use environment variables for all sensitive data
-5. Enable HTTPS
-6. Set up proper logging
-7. Use process manager (PM2, etc.)
-
-## License
+## 📜 License
 
 ISC
-
-## Support
-
-For issues or questions, please refer to the API documentation at `/docs` endpoint.
-
-#   s u p p o r t 
- 
- 
