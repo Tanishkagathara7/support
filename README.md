@@ -96,22 +96,13 @@ This script will:
   - Email: `manager@example.com`
   - Password: `Manager123!`
 
-#### Option B: Manual Setup
-
-1. Make sure MongoDB is running on your system
-2. The database and collections will be created automatically when you first run the application
 
 ### 4. Start the Server
 
 **Development mode (with auto-reload):**
 ```bash
 npm run dev
-```
 
-**Production mode:**
-```bash
-npm start
-```
 
 The server will start on `http://localhost:3000` (or your configured PORT).
 
@@ -132,21 +123,19 @@ Public route for user login.
 **Request:**
 ```json
 {
-  "email": "user@example.com",
-  "password": "password123"
+  "email": "manager@example.com",
+  "password": "Manager123!"
 }
-```
 
 **Response:**
-```json
-{
+```{
   "success": true,
   "data": {
     "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
     "user": {
-      "id": 1,
-      "name": "John Doe",
-      "role": "USER"
+      "id": "...",
+      "name": "Default Manager",
+      "role": "MANAGER"
     }
   }
 }
@@ -490,5 +479,6 @@ ISC
 
 For issues or questions, please refer to the API documentation at `/docs` endpoint.
 
-#   s u p p o r t  
+#   s u p p o r t 
+ 
  
