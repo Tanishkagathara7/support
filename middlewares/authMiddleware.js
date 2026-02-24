@@ -1,5 +1,5 @@
 const jwt = require('jsonwebtoken');
-const { User, Role } = require('../models');
+const { User } = require('../models');
 
 const authMiddleware = async (req, res, next) => {
   try {
@@ -16,7 +16,7 @@ const authMiddleware = async (req, res, next) => {
 
     try {
       const decoded = jwt.verify(token, process.env.JWT_SECRET);
-      
+
       const user = await User.findById(decoded.userId)
         .populate('role_id', 'name');
 

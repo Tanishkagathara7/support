@@ -37,8 +37,8 @@ const assignTicketValidation = [
   body('assigned_to')
     .notEmpty()
     .withMessage('assigned_to is required')
-    .isInt()
-    .withMessage('assigned_to must be a valid user ID'),
+    .isMongoId()
+    .withMessage('assigned_to must be a valid MongoDB ObjectId'),
   validationMiddleware
 ];
 

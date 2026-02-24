@@ -1,4 +1,4 @@
-const { Ticket, User, Role, TicketStatusLog } = require('../models');
+const { Ticket, User, TicketStatusLog } = require('../models');
 const { isValidTransition } = require('../utils/statusTransition');
 
 class TicketService {
@@ -42,7 +42,7 @@ class TicketService {
     // Check access - convert ObjectId to string for comparison
     const userIdStr = userId.toString();
     const createdByStr = ticket.created_by._id ? ticket.created_by._id.toString() : ticket.created_by.toString();
-    const assignedToStr = ticket.assigned_to ? 
+    const assignedToStr = ticket.assigned_to ?
       (ticket.assigned_to._id ? ticket.assigned_to._id.toString() : ticket.assigned_to.toString()) : null;
 
     if (userRole === 'USER' && createdByStr !== userIdStr) {
@@ -57,14 +57,14 @@ class TicketService {
 
   static async assignTicket(ticketId, assigneeId, userRole) {
     // Verify assignee is SUPPORT or MANAGER
-    const assignee = await User.findById(assigneeId).populate('role_id');
+    // populate('role_id') already fetches the Role document, so use .name directly
+    const assignee = await User.findById(assigneeId).populate('role_id', 'name');
 
     if (!assignee) {
       throw new Error('Assignee not found');
     }
 
-    const role = await Role.findById(assignee.role_id);
-    if (!role || role.name === 'USER') {
+    if (!assignee.role_id || assignee.role_id.name === 'USER') {
       throw new Error('Cannot assign ticket to USER role. Only SUPPORT or MANAGER can be assigned.');
     }
 
@@ -83,7 +83,7 @@ class TicketService {
 
   static async updateStatus(ticketId, newStatus, userId) {
     const ticket = await Ticket.findById(ticketId);
-    
+
     if (!ticket) {
       throw new Error('Ticket not found');
     }

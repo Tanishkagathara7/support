@@ -13,7 +13,7 @@ const createComment = async (req, res, next) => {
       });
     }
 
-    // Check access permission
+    
     const ticket = await Ticket.findById(id);
     if (!ticket) {
       return res.status(404).json({
@@ -22,7 +22,7 @@ const createComment = async (req, res, next) => {
       });
     }
 
-    // Permission check - convert ObjectId to string for comparison
+    
     const userIdStr = req.user.id;
     const createdByStr = ticket.created_by.toString();
     const assignedToStr = ticket.assigned_to ? ticket.assigned_to.toString() : null;
